@@ -2,11 +2,13 @@
 
 A quick hacky script that uses `acorn` to parse JS code for an Observable Plot plot, and produces some svelte-like code.
 
-A POC for auto-converitng examples for [SveltePlot](https://www.vis4.net/blog/2024/01/svelteplot/)
+A POC for auto-converting examples for [SveltePlot](https://www.vis4.net/blog/2024/01/svelteplot/)
 
 Install dependencies with `npm install`, then run with `node main.mjs`.
 
 ## Example output
+
+Example 1:
 
 ```js
 Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})] })
@@ -18,7 +20,7 @@ Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})] })
 </Plot>
 ```
 
-
+Example 2:
 
 ```js
 Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})], y: {grid: true} })
@@ -32,6 +34,7 @@ Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})], y: {grid: true}
 ```
 
 
+Example 3:
 
 ```js
 Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'}), Plot.circle(aapl, {x: 'Date', y: 'Close'})] })
@@ -45,7 +48,7 @@ Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'}), Plot.circle(aapl
 </Plot>
 ```
 
-
+Example 4:
 
 ```js
 Plot.lineY(aapl, {x: 'Date', y: 'Close'}).plot({y: {grid: true}})
@@ -58,7 +61,7 @@ Plot.lineY(aapl, {x: 'Date', y: 'Close'}).plot({y: {grid: true}})
 </Plot>
 ```
 
-
+Example 5:
 
 ```js
 Plot.lineY(aapl, {x: 'Date', y: 'Close'}).circle(aapl, {x: 'Date', y: 'Close'}).plot({y: {grid: true}})
