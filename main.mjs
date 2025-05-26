@@ -33,7 +33,7 @@ function parsePlotString(plotString) {
     marks.push(...processMarkAST(markAST, true));
   }
 
-  for (const option of startNode.arguments[0].properties) {
+  for (const option of (startNode.arguments[0]?.properties ?? [])) {
     if (option.key.name === "marks") {
       for (const markAST of option.value.elements) {
         marks.push(...processMarkAST(markAST));
