@@ -33,7 +33,7 @@ function parsePlotString(plotString) {
     marks.push(...processMarkAST(markAST, true));
   }
 
-  for (const option of (startNode.arguments[0]?.properties ?? [])) {
+  for (const option of startNode.arguments[0]?.properties ?? []) {
     if (option.key.name === "marks") {
       for (const markAST of option.value.elements) {
         marks.push(...processMarkAST(markAST));
@@ -46,7 +46,7 @@ function parsePlotString(plotString) {
   return { plotOptions, marks };
 }
 
-function convertToSvelte(plotString) {
+export function convertToSvelte(plotString) {
   const { plotOptions, marks } = parsePlotString(plotString);
 
   const capitalizeFirstLetter = (str) =>
@@ -67,7 +67,7 @@ function convertToSvelte(plotString) {
       .join(" ");
 
     output += `  <${capitalizeFirstLetter(
-      mark.name
+      mark.name,
     )} ${markOptionsString} />\n`;
   }
   output += `</Plot>\n`;
@@ -75,21 +75,24 @@ function convertToSvelte(plotString) {
   return output;
 }
 
-const examples = [
-  "Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})] })",
-  "Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})], y: {grid: true} })",
+const processSTDIN = () => {
+  process.stdin.resume();
+  process.stdin.setEncoding("utf-8");
 
-  "Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'}), Plot.circle(aapl, {x: 'Date', y: 'Close'})] })",
+  let userInput = "";
 
-  "Plot.lineY(aapl, {x: 'Date', y: 'Close'}).plot({y: {grid: true}})",
-  "Plot.lineY(aapl, {x: 'Date', y: 'Close'}).circle(aapl, {x: 'Date', y: 'Close'}).plot({y: {grid: true}})",
-];
+  process.stdin.on("data", (data) => {
+    userInput += data;
+  });
 
-for (const example of examples) {
-    console.log(example);
-    console.log("\n");
-    console.log(convertToSvelte(example));
-    console.log("\n\n");
-  }
-  
-  
+  process.stdin.on("end", () => {
+    console.log("User input:", userInput.trim());
+    console.log("\n\n\n");
+
+    console.log(convertToSvelte(userInput));
+
+    process.exit();
+  });
+};
+
+processSTDIN();

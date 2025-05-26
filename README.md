@@ -13,7 +13,7 @@ Install dependencies with `npm install`, then run with `node main.mjs`.
 Example 1:
 
 ```js
-Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})] })
+Plot.plot({ marks: [Plot.lineY(aapl, { x: "Date", y: "Close" })] });
 ```
 
 ```svelte
@@ -25,7 +25,10 @@ Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})] })
 Example 2:
 
 ```js
-Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})], y: {grid: true} })
+Plot.plot({
+  marks: [Plot.lineY(aapl, { x: "Date", y: "Close" })],
+  y: { grid: true },
+});
 ```
 
 ```svelte
@@ -35,11 +38,15 @@ Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})], y: {grid: true}
 </Plot>
 ```
 
-
 Example 3:
 
 ```js
-Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'}), Plot.circle(aapl, {x: 'Date', y: 'Close'})] })
+Plot.plot({
+  marks: [
+    Plot.lineY(aapl, { x: "Date", y: "Close" }),
+    Plot.circle(aapl, { x: "Date", y: "Close" }),
+  ],
+});
 ```
 
 ```svelte
@@ -53,7 +60,7 @@ Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'}), Plot.circle(aapl
 Example 4:
 
 ```js
-Plot.lineY(aapl, {x: 'Date', y: 'Close'}).plot({y: {grid: true}})
+Plot.lineY(aapl, { x: "Date", y: "Close" }).plot({ y: { grid: true } });
 ```
 
 ```svelte
@@ -66,7 +73,9 @@ Plot.lineY(aapl, {x: 'Date', y: 'Close'}).plot({y: {grid: true}})
 Example 5:
 
 ```js
-Plot.lineY(aapl, {x: 'Date', y: 'Close'}).circle(aapl, {x: 'Date', y: 'Close'}).plot({y: {grid: true}})
+Plot.lineY(aapl, { x: "Date", y: "Close" })
+  .circle(aapl, { x: "Date", y: "Close" })
+  .plot({ y: { grid: true } });
 ```
 
 ```svelte
@@ -76,4 +85,3 @@ Plot.lineY(aapl, {x: 'Date', y: 'Close'}).circle(aapl, {x: 'Date', y: 'Close'}).
   <LineY data={aapl} x={'Date'} y={'Close'} />
 </Plot>
 ```
-
