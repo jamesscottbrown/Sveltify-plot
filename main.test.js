@@ -20,7 +20,7 @@ test("linechart example", () => {
     "Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})] })";
 
   expect(convertToSvelte(str)).toMatchIgnoringWhitespace(`<Plot  >
-  <LineY data={aapl} x={'Date'} y={'Close'} />
+  <LineY data={aapl} x='Date' y='Close' />
 </Plot>`);
 });
 
@@ -29,8 +29,8 @@ test("linechart with grid", () => {
     "Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'})], y: {grid: true} })";
 
   expect(convertToSvelte(str))
-    .toMatchIgnoringWhitespace(`<Plot y={  grid: true} >
-  <LineY data={aapl} x={'Date'} y={'Close'} />
+    .toMatchIgnoringWhitespace(`<Plot y={ {grid: true}} >
+  <LineY data={aapl} x='Date' y='Close' />
 </Plot>`);
 });
 
@@ -39,8 +39,8 @@ test("linechart with points", () => {
     "Plot.plot({  marks: [Plot.lineY(aapl, {x: 'Date', y: 'Close'}), Plot.circle(aapl, {x: 'Date', y: 'Close'})] })";
 
   expect(convertToSvelte(str)).toMatchIgnoringWhitespace(`<Plot  >
-  <LineY data={aapl} x={'Date'} y={'Close'} />
-  <Circle data={aapl} x={'Date'} y={'Close'} />
+  <LineY data={aapl} x='Date' y='Close' />
+  <Circle data={aapl} x='Date' y='Close' />
 </Plot>`);
 });
 
@@ -49,8 +49,8 @@ test("linechart with grid (alternate syntax)", () => {
     "Plot.lineY(aapl, {x: 'Date', y: 'Close'}).plot({y: {grid: true}})";
 
   expect(convertToSvelte(str))
-    .toMatchIgnoringWhitespace(`<Plot y={  grid: true} >
-  <LineY data={aapl} x={'Date'} y={'Close'} />
+    .toMatchIgnoringWhitespace(`<Plot y={{grid: true}} >
+  <LineY data={aapl} x='Date' y='Close' />
 </Plot>`);
 });
 
@@ -59,9 +59,9 @@ test("linechart with grid", () => {
     "Plot.lineY(aapl, {x: 'Date', y: 'Close'}).circle(aapl, {x: 'Date', y: 'Close'}).plot({y: {grid: true}})";
 
   expect(convertToSvelte(str))
-    .toMatchIgnoringWhitespace(`<Plot y={  grid: true} >
-  <Circle data={aapl} x={'Date'} y={'Close'} />
-  <LineY data={aapl} x={'Date'} y={'Close'} />
+    .toMatchIgnoringWhitespace(`<Plot y={{grid: true}} >
+  <Circle data={aapl} x='Date' y='Close' />
+  <LineY data={aapl} x='Date' y='Close' />
 </Plot>`);
 });
 
@@ -69,6 +69,72 @@ test("calling .plot() with no arguments", () => {
   const str = "Plot.lineY(aapl, {x: 'Date', y: 'Close'}).plot()";
 
   expect(convertToSvelte(str)).toMatchIgnoringWhitespace(`<Plot >
-  <LineY data={aapl} x={'Date'} y={'Close'} />
+  <LineY data={aapl} x='Date' y='Close' />
+</Plot>`);
+});
+
+test("a broken example", () => {
+  const str = `Plot.plot({
+  y: {
+    grid: true,
+    tickFormat: "+f",
+    label: "↑ Surface temperature anomaly (°C)"
+  },
+  color: {
+    scheme: "BuRd",
+    legend: true
+  },
+  marks: [
+    Plot.ruleY([0]),
+    Plot.dot(gistemp, {x: "Date", y: "Anomaly", stroke: "Anomaly"})
+  ]
+})`;
+
+  expect(convertToSvelte(str))
+    .toMatchIgnoringWhitespace(`<Plot y={ { grid: true,  tickFormat: "+f",  label: "↑ Surface temperature anomaly (°C)"}} color={  {scheme: "BuRd",  legend: true}} >
+  <RuleY data={[0]} />
+  <Dot data={gistemp} x="Date" y="Anomaly" stroke="Anomaly" />
+</Plot>
+`);
+});
+
+test("Using a function to define an encoding", () => {
+  const str = `Plot.plot({
+  grid: true,
+  x: {
+    label: "Daily change (%) →",
+    tickFormat: "+f",
+    percent: true
+  },
+  y: {
+    type: "log",
+    label: "↑ Daily trading volume"
+  },
+  marks: [
+    Plot.ruleX([0]),
+    Plot.dot(aapl, {x: (d) => (d.Close - d.Open) / d.Open, y: "Volume", r: "Volume"})
+  ]
+})`;
+
+  expect(convertToSvelte(str))
+    .toMatchIgnoringWhitespace(`<Plot grid=true x={{  label: "Daily change (%) →",  tickFormat: "+f",  percent: true}} y={{  type: "log",  label: "↑ Daily trading volume"}} >
+  <RuleX data={[0]} />
+  <Dot data={aapl} x={d => (d.Close - d.Open) / d.Open} y="Volume" r="Volume" />
+</Plot>
+`);
+});
+
+test("Numerical plot attribute", () => {
+  const str = `Plot.plot({
+  marginLeft: 60,
+  x: {inset: 10},
+  y: {label: null},
+  marks: [
+    Plot.dot(penguins, {x: "body_mass_g", y: "species", stroke: "sex"})
+  ]
+})`;
+  expect(convertToSvelte(str))
+    .toMatchIgnoringWhitespace(`<Plot marginLeft={60} x={{  inset: 10}} y={{  label: null}} >
+  <Dot data={penguins} x="body_mass_g" y="species" stroke="sex" />
 </Plot>`);
 });

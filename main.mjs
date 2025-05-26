@@ -6,7 +6,7 @@ function processMarkAST(markAST, recurse = false) {
   const mark = { name: markAST.callee.property.name, options: {} };
 
   mark.options.data = generate(markAST.arguments[0]);
-  for (const subOption of markAST.arguments[1].properties) {
+  for (const subOption of markAST.arguments[1]?.properties || []) {
     mark.options[subOption.key.name] = generate(subOption.value);
   }
   marks.push(mark);
@@ -46,6 +46,30 @@ function parsePlotString(plotString) {
   return { plotOptions, marks };
 }
 
+const formatProp = (key, value) => {
+  const parsed = Parser.parseExpressionAt(value, 0, { ecmaVersion: 2020 });
+
+  if (
+    [
+      "ObjectExpression",
+      "Identifier",
+      "ArrayExpression",
+      "ArrowFunctionExpression",
+    ].includes(parsed.type)
+  ) {
+    return `${key}={${value}}`;
+  } else if (parsed.type === "Literal" && typeof parsed.value === "number") {
+    return `${key}={${value}}`;
+  } else if (parsed.type === "Literal") {
+    return `${key}=${value}`;
+  } else if (typeof parsed.value === "string") {
+    return `${key}="${value}"`;
+  } else if (typeof parsed.value === "number") {
+    return `${key}={${value}}`;
+  }
+  return `${key}=${value}`;
+};
+
 export function convertToSvelte(plotString) {
   const { plotOptions, marks } = parsePlotString(plotString);
 
@@ -53,7 +77,7 @@ export function convertToSvelte(plotString) {
     str.charAt(0).toUpperCase() + str.slice(1);
 
   const plotOptionsString = Object.keys(plotOptions)
-    .map((key) => `${key}=${plotOptions[key]}`)
+    .map((key) => formatProp(key, plotOptions[key]))
     .join(" ")
     .replace(/\n/g, "");
 
@@ -63,7 +87,7 @@ export function convertToSvelte(plotString) {
 
   for (const mark of marks) {
     const markOptionsString = Object.keys(mark.options)
-      .map((key) => `${key}={${mark.options[key]}}`)
+      .map((key) => formatProp(key, mark.options[key]))
       .join(" ");
 
     output += `  <${capitalizeFirstLetter(
