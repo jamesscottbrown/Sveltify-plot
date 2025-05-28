@@ -138,3 +138,104 @@ test("Numerical plot attribute", () => {
   <Dot data={penguins} x="body_mass_g" y="species" stroke="sex" />
 </Plot>`);
 });
+
+
+
+
+test("a transform function", () => {
+  const str = 'Plot.rectY(olympians, Plot.binX({y: "count"}, {x: "weight", fill: "sex"})).plot()';
+
+  expect(convertToSvelte(str)).toMatchIgnoringWhitespace(`<Plot  >
+  <RectY {...binX({data: olympians, "x":"weight","fill":"sex"}, {
+  y: "count"
+} )} />
+</Plot>
+`)
+
+});
+
+
+test("Ordinal scatterplot example", () => {
+  // https://observablehq.com/@observablehq/plot-ordinal-scatterplot
+  const str = `Plot.plot({
+  label: null,
+  marginLeft: 60,
+  height: 240,
+  grid: true,
+  r: {range: [0, 40]},
+  marks: [
+    Plot.dot(penguins, Plot.group({r: "count"}, {x: "species", y: "island", stroke: "sex"}))
+  ]
+})
+  `;
+
+    expect(convertToSvelte(str))
+    .toMatchIgnoringWhitespace(`<Plot label=null marginLeft={60} height={240} grid=true r={{  range: [0, 40]}} >
+  <Dot {...group(
+      {data: penguins, "x":"species","y":"island","stroke":"sex"}, 
+      { r: "count" } 
+    )} 
+   />
+</Plot>
+`);
+})
+
+test("another transform function", () => {
+  const str = `Plot.plot({
+  aspectRatio: 1,
+  x: {label: "Age (years)"},
+  y: {
+    grid: true,
+    label: "← Women · Men →",
+    labelAnchor: "center",
+    tickFormat: Math.abs
+  },
+  marks: [
+    Plot.dot(
+      congress,
+      Plot.stackY2({
+        x: (d) => 2023 - d.birthday.getUTCFullYear(),
+        y: (d) => d.gender === "M" ? 1 : -1,
+        fill: "gender",
+        title: "full_name"
+      })
+    ),
+    Plot.ruleY([0])
+  ]
+})`;
+
+    expect(convertToSvelte(str)).toMatchIgnoringWhitespace(`<Plot aspectRatio={1} x={{  label: "Age (years)"}} y={{  grid: true,  label: "← Women · Men →",  labelAnchor: "center",  tickFormat: Math.abs}} >
+  <Dot {...stackY2({data: congress}, {
+  x: d => 2023 - d.birthday.getUTCFullYear(),
+  y: d => d.gender === "M" ? 1 : -1,
+  fill: "gender",
+  title: "full_name"
+} )} />
+  <RuleY data={[0]} />
+</Plot>
+`);
+})
+
+
+test("2D faceting", () => {
+  const str = `Plot.plot({
+  grid: true,
+  marginRight: 60,
+  facet: {label: null},
+  marks: [
+    Plot.frame(),
+    Plot.dot(penguins, {
+      x: "culmen_length_mm",
+      y: "culmen_depth_mm",
+      fx: "sex",
+      fy: "species"
+    })
+  ]
+})`;
+
+  expect(convertToSvelte(str)).toMatchIgnoringWhitespace(`<Plot grid=true marginRight={60} facet={{  label: null}} >
+  <Frame  />
+  <Dot data={penguins} x="culmen_length_mm" y="culmen_depth_mm" fx="sex" fy="species" />
+</Plot>
+`)
+})

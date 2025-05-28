@@ -5,10 +5,35 @@ function processMarkAST(markAST, recurse = false) {
   const marks = [];
   const mark = { name: markAST.callee.property.name, options: {} };
 
-  mark.options.data = generate(markAST.arguments[0]);
-  for (const subOption of markAST.arguments[1]?.properties || []) {
-    mark.options[subOption.key.name] = generate(subOption.value);
+  // if a transform, then markAST.type === "CallExpression";
+
+  // here may be no arguments, as in `Plot.frame()`
+  if (markAST.arguments.length > 0 ){
+      mark.options.data = generate(markAST.arguments[0]);
   }
+
+  if (markAST.arguments[1]?.properties) {
+    // second argument to the mark function is options
+    for (const subOption of markAST.arguments[1]?.properties || []) {
+      mark.options[subOption.key.name] = generate(subOption.value);
+    }
+  } else if (markAST.arguments[1]?.type === "CallExpression") {
+    const transformName = markAST.arguments[1].callee.property.name;
+    mark.transform = {};
+    mark.transform.name = transformName;
+
+    const optionsAST = markAST.arguments[1].arguments[0];
+    mark.transform.transformOptions = optionsAST ? generate(optionsAST) : null;
+
+    const markOptions = {};
+    if (markAST.arguments[1].arguments.length > 1) {
+      for (const p of markAST.arguments[1].arguments[1].properties) {
+        markOptions[p.key.name] = generate(p.value).slice(1, -1);
+      }
+    }
+    mark.transform.markOptions = markOptions;
+  }
+
   marks.push(mark);
 
   if (recurse && markAST?.callee?.object?.callee?.property) {
@@ -70,6 +95,30 @@ const formatProp = (key, value) => {
   return `${key}=${value}`;
 };
 
+const formatMark = (mark) => {
+
+  if (mark.transform) {
+    const opts = JSON.stringify(mark.transform.markOptions).slice(1, -1);
+
+    let markOptions = '';
+    if (opts.length === 0) {
+      markOptions = `{data: ${mark.options.data}}`
+    } else {
+      markOptions = `{data: ${mark.options.data}, ${opts}}`
+    }
+
+    if (mark.transform.transformOptions) {
+      return `{...${mark.transform.name}(${markOptions}, ${mark.transform.transformOptions} )}`;
+    } else {
+      return `{...${mark.transform.name}(${markOptions} )}`;
+    }
+  } else {
+      return Object.keys(mark.options)
+      .map((key) => formatProp(key, mark.options[key]))
+      .join(" ");
+  }
+};
+
 export function convertToSvelte(plotString) {
   const { plotOptions, marks } = parsePlotString(plotString);
 
@@ -86,9 +135,7 @@ export function convertToSvelte(plotString) {
   output += `<Plot ${plotOptionsString} >\n`;
 
   for (const mark of marks) {
-    const markOptionsString = Object.keys(mark.options)
-      .map((key) => formatProp(key, mark.options[key]))
-      .join(" ");
+    const markOptionsString = formatMark(mark);
 
     output += `  <${capitalizeFirstLetter(
       mark.name,
