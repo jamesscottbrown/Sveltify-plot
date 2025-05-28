@@ -156,11 +156,7 @@ const processSTDIN = () => {
   });
 
   process.stdin.on("end", () => {
-    console.log("User input:", userInput.trim());
-    console.log("\n\n\n");
-
     console.log(convertToSvelte(userInput));
-
     process.exit();
   });
 };
