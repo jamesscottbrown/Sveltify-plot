@@ -139,21 +139,17 @@ test("Numerical plot attribute", () => {
 </Plot>`);
 });
 
-
-
-
 test("a transform function", () => {
-  const str = 'Plot.rectY(olympians, Plot.binX({y: "count"}, {x: "weight", fill: "sex"})).plot()';
+  const str =
+    'Plot.rectY(olympians, Plot.binX({y: "count"}, {x: "weight", fill: "sex"})).plot()';
 
   expect(convertToSvelte(str)).toMatchIgnoringWhitespace(`<Plot  >
   <RectY {...binX({data: olympians, "x":"weight","fill":"sex"}, {
   y: "count"
 } )} />
 </Plot>
-`)
-
+`);
 });
-
 
 test("Ordinal scatterplot example", () => {
   // https://observablehq.com/@observablehq/plot-ordinal-scatterplot
@@ -169,7 +165,7 @@ test("Ordinal scatterplot example", () => {
 })
   `;
 
-    expect(convertToSvelte(str))
+  expect(convertToSvelte(str))
     .toMatchIgnoringWhitespace(`<Plot label=null marginLeft={60} height={240} grid=true r={{  range: [0, 40]}} >
   <Dot {...group(
       {data: penguins, "x":"species","y":"island","stroke":"sex"}, 
@@ -178,7 +174,7 @@ test("Ordinal scatterplot example", () => {
    />
 </Plot>
 `);
-})
+});
 
 test("another transform function", () => {
   const str = `Plot.plot({
@@ -204,7 +200,8 @@ test("another transform function", () => {
   ]
 })`;
 
-    expect(convertToSvelte(str)).toMatchIgnoringWhitespace(`<Plot aspectRatio={1} x={{  label: "Age (years)"}} y={{  grid: true,  label: "← Women · Men →",  labelAnchor: "center",  tickFormat: Math.abs}} >
+  expect(convertToSvelte(str))
+    .toMatchIgnoringWhitespace(`<Plot aspectRatio={1} x={{  label: "Age (years)"}} y={{  grid: true,  label: "← Women · Men →",  labelAnchor: "center",  tickFormat: Math.abs}} >
   <Dot {...stackY2({data: congress}, {
   x: d => 2023 - d.birthday.getUTCFullYear(),
   y: d => d.gender === "M" ? 1 : -1,
@@ -214,8 +211,7 @@ test("another transform function", () => {
   <RuleY data={[0]} />
 </Plot>
 `);
-})
-
+});
 
 test("2D faceting", () => {
   const str = `Plot.plot({
@@ -233,9 +229,10 @@ test("2D faceting", () => {
   ]
 })`;
 
-  expect(convertToSvelte(str)).toMatchIgnoringWhitespace(`<Plot grid=true marginRight={60} facet={{  label: null}} >
+  expect(convertToSvelte(str))
+    .toMatchIgnoringWhitespace(`<Plot grid=true marginRight={60} facet={{  label: null}} >
   <Frame  />
   <Dot data={penguins} x="culmen_length_mm" y="culmen_depth_mm" fx="sex" fy="species" />
 </Plot>
-`)
-})
+`);
+});

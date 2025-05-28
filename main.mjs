@@ -8,8 +8,8 @@ function processMarkAST(markAST, recurse = false) {
   // if a transform, then markAST.type === "CallExpression";
 
   // here may be no arguments, as in `Plot.frame()`
-  if (markAST.arguments.length > 0 ){
-      mark.options.data = generate(markAST.arguments[0]);
+  if (markAST.arguments.length > 0) {
+    mark.options.data = generate(markAST.arguments[0]);
   }
 
   if (markAST.arguments[1]?.properties) {
@@ -96,15 +96,14 @@ const formatProp = (key, value) => {
 };
 
 const formatMark = (mark) => {
-
   if (mark.transform) {
     const opts = JSON.stringify(mark.transform.markOptions).slice(1, -1);
 
-    let markOptions = '';
+    let markOptions = "";
     if (opts.length === 0) {
-      markOptions = `{data: ${mark.options.data}}`
+      markOptions = `{data: ${mark.options.data}}`;
     } else {
-      markOptions = `{data: ${mark.options.data}, ${opts}}`
+      markOptions = `{data: ${mark.options.data}, ${opts}}`;
     }
 
     if (mark.transform.transformOptions) {
@@ -113,7 +112,7 @@ const formatMark = (mark) => {
       return `{...${mark.transform.name}(${markOptions} )}`;
     }
   } else {
-      return Object.keys(mark.options)
+    return Object.keys(mark.options)
       .map((key) => formatProp(key, mark.options[key]))
       .join(" ");
   }
